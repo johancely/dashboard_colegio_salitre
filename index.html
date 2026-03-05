@@ -1,0 +1,231 @@
+﻿<!DOCTYPE html>
+<!--
+Dashboard para la profe Vanessa jeje
+-->
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Análisis de Encuesta Tecnológica</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <main class="page">
+        <section class="header-row card">
+            <div>
+                <h1>Análisis de Encuesta Tecnológica</h1>
+                <p class="subtitle">Colegio Salitre Suba</p>
+            </div>
+            <div class="controls">
+                <input id="csvInput" type="file" accept=".csv,text/csv" hidden />
+                <button id="btnUpload" class="btn">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M4.5 16.5c-1.5 0-3-1-3-2.5a3.5 3.5 0 0 1 3.3-3.5 6 6 0 0 1 11.4-2 4 4 0 0 1 2.8 7.5">
+                        </path>
+                        <path d="M12 12v9"></path>
+                        <path d="m16 16-4-4-4 4"></path>
+                    </svg>
+                </button>
+                <label class="field" for="courseSelect">Curso</label>
+                <select id="courseSelect" class="select">
+                    <option>Todos</option>
+                    <option>601</option>
+                    <option>602</option>
+                    <option>603</option>
+                    <option>604</option>
+                    <option>605</option>
+                </select>
+            </div>
+        </section>
+        <section class="kpi-strip">
+            <article class="kpi card">
+                <p class="kpi-label">Respuestas</p>
+                <p class="kpi-value" id="kpiResponses">0</p>
+                <p class="kpi-caption" id="kpiResponsesCaption">Total de formularios completados</p>
+            </article>
+            <article class="kpi card">
+                <p class="kpi-label">Edad promedio</p>
+                <p class="kpi-value" id="kpiAge">0.0</p>
+                <p class="kpi-caption" id="kpiAgeCaption">Promedio y rango de edad (0–0)</p>
+            </article>
+            <article class="kpi card">
+                <p class="kpi-label">Uso intensivo de dispositivos</p>
+                <p class="kpi-value" id="kpiIntensive">0.0%</p>
+                <p class="kpi-caption" id="kpiIntensiveCaption">Porcentaje con uso ≥ 3 h/día</p>
+            </article>
+            <article class="kpi card">
+                <p class="kpi-label">Acceso a internet estable</p>
+                <p class="kpi-value" id="kpiWifi">0.0%</p>
+                <p class="kpi-caption" id="kpiWifiCaption">Conexión principal con Wi-Fi en casa</p>
+            </article>
+            <article class="kpi card">
+                <p class="kpi-label">Audiencia potencial</p>
+                <p class="kpi-value" id="kpiAudience">0.0%</p>
+                <p class="kpi-caption" id="kpiAudienceCaption">Aprobación como audiencia (acuerdo total/parcial)</p>
+            </article>
+        </section>
+        <section class="charts-grid">
+            <article class="chart-card card">
+                <header class="chart-head">
+                    <h2>Dispositivo principal para estudiar</h2>
+                    <p id="subDevice">Distribución del dispositivo principal (N=0).</p>
+                </header>
+                <div class="chart-wrap donut-wrap"><canvas id="chartDevice"></canvas>
+                    <div class="donut-center" id="donutCenter">Sin datos</div>
+                    <div class="chart-empty" id="emptyDevice">Sin datos para este filtro.</div>
+                </div>
+            </article>
+            <article class="chart-card card">
+                <header class="chart-head">
+                    <h2>Horas de uso diario de dispositivos fuera del colegio</h2>
+                    <p id="subHours">Intensidad de uso diario (N=0).</p>
+                </header>
+                <div class="chart-wrap"><canvas id="chartHours"></canvas>
+                    <div class="chart-empty" id="emptyHours">Sin datos para este filtro.</div>
+                </div>
+            </article>
+            <article class="chart-card card">
+                <header class="chart-head">
+                    <h2>Actividades creativas realizadas</h2>
+                    <p id="subActivities">Selección múltiple: un estudiante puede marcar varias opciones.</p>
+                </header>
+                <div class="chart-wrap"><canvas id="chartActivities"></canvas>
+                    <div class="chart-empty" id="emptyActivities">Sin datos para este filtro.</div>
+                </div>
+            </article>
+            <article class="chart-card card">
+                <header class="chart-head">
+                    <h2>Facilidad con aplicaciones creativas</h2>
+                    <p id="subEase">Autoevaluación de facilidad para producción creativa (N=0).</p>
+                </header>
+                <div class="chart-wrap"><canvas id="chartEase"></canvas>
+                    <div class="chart-empty" id="emptyEase">Sin datos para este filtro.</div>
+                </div>
+            </article>
+            <article class="chart-card card">
+                <header class="chart-head">
+                    <h2>Podcast: conocimiento vs escucha</h2>
+                    <p id="subPodcast">Brecha entre conocer y consumir podcasts (N=0).</p>
+                </header>
+                <div class="chart-wrap"><canvas id="chartPodcast"></canvas>
+                    <div class="chart-empty" id="emptyPodcast">Sin datos para este filtro.</div>
+                </div>
+            </article>
+            <article class="chart-card card">
+                <header class="chart-head">
+                    <h2>Disposición hacia un proyecto escolar de audio</h2>
+                    <p id="subProject">Niños a quienes les causa un interés la formación y creación de un programa
+                        (N=0).</p>
+                </header>
+                <div class="chart-wrap"><canvas id="chartProject"></canvas>
+                    <div class="chart-empty" id="emptyProject">Sin datos para este filtro.</div>
+                </div>
+            </article>
+        </section>
+        <section class="tables-grid">
+            <article class="table-card card">
+                <header class="chart-head">
+                    <h2>Preguntas claves</h2>
+                    <p>Distribución de opciones principales por pregunta (N del filtro activo).</p>
+                </header>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Pregunta</th>
+                                <th>Opción 1 (%, n)</th>
+                                <th>Opción 2 (%, n)</th>
+                                <th>Opción 3 (%, n)</th>
+                                <th>N</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableTop3Body"></tbody>
+                    </table>
+                </div>
+            </article>
+            <article class="table-card card" id="courseCompareCard">
+                <header class="chart-head">
+                    <h2>Comparativo por curso</h2>
+                    <p>Resumen rápido de diferencias entre cursos.</p>
+                </header>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Curso</th>
+                                <th>N</th>
+                                <th>% uso ≥3h</th>
+                                <th>% Wi-Fi en casa</th>
+                                <th>% grabó audio (Sí)</th>
+                                <th>% editó audio/video (Sí)</th>
+                                <th>% audiencia potencial</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableCourseBody"></tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+    </main>
+    <script>
+        const COURSES = ["Todos", "601", "602", "603", "604", "605"];
+        const Q = { course: "CURSO", age: "¿Cuántos años tienes?", hours: "¿Cuántas horas al día usas dispositivos tecnológicos fuera del colegio?", connect: "¿Desde dónde te conectas principalmente a internet?", device: "¿Qué dispositivo usas más para estudiar o hacer tareas?", activities: "¿Cuáles de estas actividades has realizado?", ease: "¿Qué tan fácil te resulta el uso de aplicaciones digitales para la producción creativa?", knows: "¿Sabes qué es un podcast?", listens: "¿Escuchas podcasts?", audience: "¿Escucharías un programa hecho por estudiantes de tu colegio?", learn: "¿Te gustaría aprender a crear contenidos de audio (podcast, programas, historias)?", create: "¿Te gustaría crear un programa de audio o podcast para hablar de problemas o situaciones que ocurren en tu colegio?", record: "¿Has usado alguna vez el celular o computador para grabar audio?", edit: "¿Has editado alguna vez audio o video?", skill: "¿Cómo calificas tus habilidades en el uso de dispositivos y aplicaciones tecnológicas?" };
+        const L = { "telefono inteligente": "Teléfono", "telefono": "Teléfono", "computador portatil": "Computador", "computador de mesa": "Computador", "pc": "Computador", "portatil": "Computador", "wifi en casa": "Wi-Fi en casa", "wi fi en casa": "Wi-Fi en casa", "wifi de un familiar o vecino": "Wi-Fi (familiar/vecino)", "wi fi de un familiar o vecino": "Wi-Fi (familiar/vecino)", "si": "Sí", "mas o menos": "Más o menos", "no se de que se trata": "No sé de qué se trata" };
+        const SHORT = [
+            "hours|¿Cuántas horas al día usas dispositivos fuera del colegio?",
+            "device|¿Qué dispositivo usas más para estudiar o hacer tareas?",
+            "ease|¿Qué tan fácil te resulta el uso de aplicaciones digitales?",
+            "knows|¿Sabes qué es un podcast?",
+            "listens|¿Escuchas podcasts?",
+            "learn|¿Te gustaría aprender a crear contenidos de audio?",
+            "create|¿Te gustaría crear un programa de audio para el colegio?",
+            "skill|¿Cómo calificas tus habilidades tecnológicas?"
+        ];
+        const state = { rows: [], cache: {}, charts: {} };
+        Chart.defaults.font.family = "Manrope"; Chart.defaults.color = "#475569";
+        const percentLabelPlugin = { id: "percentLabelPlugin", afterDatasetsDraw(c) { if (!c.options.plugins.percentLabelPlugin?.enabled || !c.$N) return; const x = c.ctx; x.save(); x.font = "700 11px Manrope"; x.fillStyle = "#1e293b"; c.data.datasets.forEach((d, di) => { const m = c.getDatasetMeta(di); m.data.forEach((b, i) => { const v = d.data[i]; if (!v) return; const t = fp(v, c.$N); if (c.options.indexAxis === "y") { x.textAlign = "left"; x.fillText(t, b.x + 6, b.y + 4); } else { x.textAlign = "center"; x.fillText(t, b.x, b.y - 10); } }) }); x.restore(); } }; Chart.register(percentLabelPlugin);
+        document.getElementById("btnUpload").addEventListener("click", () => document.getElementById("csvInput").click());
+        document.getElementById("csvInput").addEventListener("change", e => { const f = e.target.files && e.target.files[0]; if (f) loadCSV(f); });
+        document.getElementById("courseSelect").addEventListener("change", () => renderAll(document.getElementById("courseSelect").value));
+        function loadCSV(file) { const r = new FileReader(); r.onload = e => { const t = String(e.target && e.target.result || ""); Papa.parse(t, { header: true, skipEmptyLines: "greedy", delimiter: detectDelimiter(t), complete: res => { state.rows = parseRows(res.data || []); buildCache(); renderAll("Todos"); } }); }; r.readAsText(file, "UTF-8"); }
+        function detectDelimiter(t) { const l = t.split(/\r?\n/)[0] || ""; return ((l.match(/;/g) || []).length > (l.match(/,/g) || []).length) ? ";" : ","; }
+        function parseRows(raw) { const o = []; const rr = resolver(raw[0] || {}); raw.forEach(a => { if (isEmpty(a)) return; const n = normalizeRow(a, rr); if (n) o.push(n); }); return o; }
+        function resolver(sample) { const m = new Map(); Object.keys(sample).forEach(k => m.set(nk(k), k)); return c => m.get(nk(c)) || c; }
+        function normalizeRow(r, get) { const course = courseN(read(r, get(Q.course))); if (!course) return null; return { course, age: ageN(read(r, get(Q.age))), hours: hoursN(read(r, get(Q.hours))), connect: multiN(read(r, get(Q.connect)), "connect"), device: deviceN(read(r, get(Q.device))), activities: multiN(read(r, get(Q.activities))), ease: easeN(read(r, get(Q.ease))), knows: knowsN(read(r, get(Q.knows))), listens: listensN(read(r, get(Q.listens))), audience: audN(read(r, get(Q.audience))), learn: learnN(read(r, get(Q.learn))), create: createN(read(r, get(Q.create))), record: yesNoN(read(r, get(Q.record))), edit: yesNoN(read(r, get(Q.edit))), skill: skillN(read(r, get(Q.skill))) }; }
+        function filterByCourse(c) { return state.cache[c] || state.cache.Todos; }
+        function buildCache() { const g = { Todos: state.rows, "601": state.rows.filter(r => r.course === "601"), "602": state.rows.filter(r => r.course === "602"), "603": state.rows.filter(r => r.course === "603"), "604": state.rows.filter(r => r.course === "604"), "605": state.rows.filter(r => r.course === "605") }; const c = {}; COURSES.forEach(k => { const rows = g[k] || []; c[k] = { rows, kpis: computeKPIs(rows), dist: computeDistributions(rows), tables: computeTables(rows) }; }); state.cache = c; }
+        function computeKPIs(rows) { const N = rows.length, ages = rows.map(r => r.age).filter(Number.isFinite), ageMean = ages.length ? ages.reduce((a, b) => a + b, 0) / ages.length : 0, ageMin = ages.length ? Math.min(...ages) : 0, ageMax = ages.length ? Math.max(...ages) : 0, intensive = rows.filter(r => r.hours === "3–4 h" || r.hours === ">4 h").length, wifi = rows.filter(r => r.connect.includes("Wi-Fi en casa")).length, aud = rows.filter(r => r.audience === "De acuerdo" || r.audience === "Totalmente de acuerdo").length; return { N, ageMean, ageMin, ageMax, intensive, wifi, aud }; }
+        function computeDistributions(rows) { const N = rows.length, devL = ["Teléfono", "Computador", "Ambos", "Ninguno"], hrsL = ["<1 h", "1–2 h", "3–4 h", ">4 h"], easeL = ["Muy fácil", "Fácil", "Difícil", "Muy difícil"], act = Object.entries(countMulti(rows, "activities")).sort((a, b) => b[1] - a[1]), kn = rows.filter(r => r.knows === "Sí" || r.knows === "Más o menos").length, ls = rows.filter(r => r.listens === "A veces" || r.listens === "Sí, con frecuencia").length, lp = rows.filter(r => r.learn === "Mucho" || r.learn === "Algo").length, ll = rows.filter(r => r.learn === "Poco" || r.learn === "Nada").length, cy = rows.filter(r => r.create === "Sí").length, cm = rows.filter(r => r.create === "Tal vez").length, cn = rows.filter(r => r.create === "No me gustaría").length; return { N, device: { labels: devL, values: countBy(rows.map(r => r.device), devL) }, hours: { labels: hrsL, values: countBy(rows.map(r => r.hours), hrsL) }, activities: { labels: act.map(x => x[0]), values: act.map(x => x[1]) }, ease: { labels: easeL, values: countBy(rows.map(r => r.ease), easeL) }, pod: { labels: ["Conocimiento", "Escucha"], values: [kn, ls] }, proj: { labels: ["Aprender a crear audio", "Crear programa del colegio"], pos: [lp, cy], mid: [0, cm], low: [ll, cn] } }; }
+        function computeTables(rows) { const N = rows.length; return { top: SHORT.map(s => { const p = s.split("|"); const k = p[0], label = p[1], vals = rows.map(r => r[k]); const top = Object.entries(countObj(vals)).sort((a, b) => b[1] - a[1]).slice(0, 3); return { label, top, N }; }) }; }
+        function renderAll(course) { const b = filterByCourse(course); renderKPIs(b.kpis); renderCharts(b.dist); renderTables(b.tables, course); }
+        function renderKPIs(k) { const N = k.N; id("kpiResponses").textContent = N; id("kpiResponsesCaption").textContent = `Total de formularios válidos (N=${N})`; id("kpiAge").textContent = fn(k.ageMean); id("kpiAgeCaption").textContent = `Promedio y rango de edad (${fn(k.ageMin)}–${fn(k.ageMax)})`; id("kpiIntensive").textContent = fp(k.intensive, N); id("kpiIntensiveCaption").textContent = `Porcentaje con uso ≥ 3 h/día (${k.intensive}/${N})`; id("kpiWifi").textContent = fp(k.wifi, N); id("kpiWifiCaption").textContent = `Conexión principal con Wi-Fi en casa (${k.wifi}/${N})`; id("kpiAudience").textContent = fp(k.aud, N); id("kpiAudienceCaption").textContent = `Aprobación como audiencia (acuerdo total/parcial) (${k.aud}/${N})`; }
+        function renderCharts(d) { const N = d.N; id("subDevice").textContent = `Distribución del dispositivo principal (N=${N}).`; id("subHours").textContent = `Intensidad de uso diario (N=${N}).`; id("subActivities").textContent = `Selección múltiple: un estudiante puede marcar varias opciones. N=${N}.`; id("subEase").textContent = `Autoevaluación de facilidad para producción creativa (N=${N}).`; id("subPodcast").textContent = `Brecha entre conocer y consumir podcasts (N=${N}).`; id("subProject").textContent = `Interés en formación y creación de un programa (N=${N}).`; cDevice(d.device, N); cHours(d.hours, N); cActivities(d.activities, N); cEase(d.ease, N); cPodcast(d.pod, N); cProject(d.proj, N); }
+        function renderTables(t, course) { const tb = id("tableTop3Body"); tb.innerHTML = ""; t.top.forEach(r => { const top = [0, 1, 2].map(i => r.top[i] || null); const tr = document.createElement("tr"); tr.innerHTML = `<td>${r.label}</td><td>${topCell(top[0], r.N)}</td><td>${topCell(top[1], r.N)}</td><td>${topCell(top[2], r.N)}</td><td>${r.N}</td>`; tb.appendChild(tr); }); if (!t.top.length) tb.innerHTML = '<tr><td colspan="5" class="empty-row">Sin datos para este filtro.</td></tr>'; id("courseCompareCard").style.display = course === "Todos" ? "block" : "none"; if (course === "Todos") renderCourse(); }
+        function renderCourse() { const tb = id("tableCourseBody"); tb.innerHTML = "";["601", "602", "603", "604", "605"].forEach(c => { const rows = (state.cache[c] && state.cache[c].rows) || []; const N = rows.length, i = rows.filter(r => r.hours === "3–4 h" || r.hours === ">4 h").length, w = rows.filter(r => r.connect.includes("Wi-Fi en casa")).length, ra = rows.filter(r => r.record === "Sí").length, ed = rows.filter(r => r.edit === "Sí").length, au = rows.filter(r => r.audience === "De acuerdo" || r.audience === "Totalmente de acuerdo").length; const tr = document.createElement("tr"); tr.innerHTML = `<td>${c}</td><td>${N}</td><td>${fp(i, N)}</td><td>${fp(w, N)}</td><td>${fp(ra, N)}</td><td>${fp(ed, N)}</td><td>${fp(au, N)}</td>`; tb.appendChild(tr); }); }
+        function cDevice(s, N) { const total = sum(s.values); empty("emptyDevice", !total); if (!total) { destroy("chartDevice"); id("donutCenter").textContent = "Sin datos"; return; } const i = s.values.indexOf(Math.max(...s.values)), l = s.labels[i], v = s.values[i]; id("donutCenter").innerHTML = `<span style="font-size:32px;font-weight:800;letter-spacing:-1px">${fp(v, N)}</span><span style="font-size:13px;font-weight:700;margin-top:-2px">${l}</span><span style="font-size:12px;color:#64748b;margin-top:2px">${v}/${N}</span>`; make("chartDevice", { type: "doughnut", data: { labels: s.labels, datasets: [{ data: s.values, backgroundColor: ["#1f6feb", "#0ea5a4", "#f59e0b", "#94a3b8"], borderColor: "#fff", borderWidth: 2, hoverOffset: 6 }] }, options: { maintainAspectRatio: false, cutout: "66%", plugins: { legend: { position: "bottom", labels: { boxWidth: 12, padding: 16 } }, tooltip: { callbacks: { label: c => tip(c.label, c.parsed, N) } }, percentLabelPlugin: { enabled: false } } } }, N); }
+        function cHours(s, N) { const t = sum(s.values); empty("emptyHours", !t); if (!t) return destroy("chartHours"); make("chartHours", { type: "bar", data: { labels: s.labels, datasets: [{ label: "Estudiantes", data: s.values, backgroundColor: "#1f6feb", borderRadius: 8, maxBarThickness: 42 }] }, options: bopt(N, { xTitle: "Rango de horas por día", yTitle: "Cantidad de estudiantes" }) }, N); }
+        function cActivities(s, N) { const t = sum(s.values); empty("emptyActivities", !t); if (!t) return destroy("chartActivities"); make("chartActivities", { type: "bar", data: { labels: s.labels, datasets: [{ label: "Estudiantes", data: s.values, backgroundColor: "#0ea5a4", borderRadius: 8, maxBarThickness: 26 }] }, options: bopt(N, { horizontal: true, xTitle: "Cantidad de estudiantes", yTitle: "Actividad" }) }, N); }
+        function cEase(s, N) { const t = sum(s.values); empty("emptyEase", !t); if (!t) return destroy("chartEase"); make("chartEase", { type: "bar", data: { labels: s.labels, datasets: [{ label: "Estudiantes", data: s.values, backgroundColor: "#6366f1", borderRadius: 8, maxBarThickness: 42 }] }, options: bopt(N, { xTitle: "Nivel de facilidad", yTitle: "Cantidad de estudiantes" }) }, N); }
+        function cPodcast(s, N) { const t = sum(s.values); empty("emptyPodcast", !t); if (!t) return destroy("chartPodcast"); make("chartPodcast", { type: "bar", data: { labels: s.labels, datasets: [{ label: "Estudiantes", data: s.values, backgroundColor: ["#1f6feb", "#e11d48"], borderRadius: 10, maxBarThickness: 56 }] }, options: bopt(N, { xTitle: "Concepto", yTitle: "Cantidad de estudiantes" }) }, N); }
+        function cProject(s, N) { const t = sum([...s.pos, ...s.mid, ...s.low]); empty("emptyProject", !t); if (!t) return destroy("chartProject"); make("chartProject", { type: "bar", data: { labels: s.labels, datasets: [{ label: "Alto interés", data: s.pos, backgroundColor: "#2563eb", stack: "s" }, { label: "Intermedio", data: s.mid, backgroundColor: "#f59e0b", stack: "s" }, { label: "Bajo interés", data: s.low, backgroundColor: "#ef4444", stack: "s" }] }, options: { maintainAspectRatio: false, plugins: { legend: { position: "bottom" }, tooltip: { callbacks: { label: c => tip(c.dataset.label, c.parsed.y, N) } } }, scales: { x: { stacked: true, title: { display: true, text: "Pregunta" }, grid: { display: false } }, y: { stacked: true, title: { display: true, text: "Cantidad de estudiantes" }, beginAtZero: true, ticks: { precision: 0 }, grid: { color: "#e2e8f0" } } } } }, N); }
+        function bopt(N, o) { o = o || {}; return { maintainAspectRatio: false, indexAxis: o.horizontal ? "y" : "x", plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => tip(c.label, o.horizontal ? c.parsed.x : c.parsed.y, N) } }, percentLabelPlugin: { enabled: true } }, scales: { x: { title: { display: !!o.xTitle, text: o.xTitle || "" }, beginAtZero: true, grace: o.horizontal ? "15%" : 0, grid: { display: !!o.horizontal, color: "#e2e8f0" } }, y: { title: { display: !!o.yTitle, text: o.yTitle || "" }, beginAtZero: true, grace: o.horizontal ? 0 : "15%", ticks: { precision: 0 }, grid: { color: "#e2e8f0" } } } }; }
+        function make(idc, config, N) { destroy(idc); const e = id(idc); if (!e) return; const ch = new Chart(e.getContext("2d"), config); ch.$N = N; state.charts[idc] = ch; }
+        function destroy(idc) { if (state.charts[idc]) { state.charts[idc].destroy(); delete state.charts[idc]; } }
+        function empty(idc, show) { const e = id(idc); if (e) e.style.display = show ? "grid" : "none"; }
+        function multiN(v, type) { return split(v).map(x => type === "connect" ? connectN(x) : labelN(x)).filter(Boolean); } function split(v) { v = String(v || "").trim(); return v ? v.split(",").map(x => x.trim()).filter(Boolean) : []; }
+        function courseN(v) { const d = txt(v).replace(/\D/g, ""); return ["601", "602", "603", "604", "605"].includes(d) ? d : ""; } function hoursN(v) { const k = nk(v); if (k.includes("menos de 1")) return "<1 h"; if (k.includes("1 y 2")) return "1–2 h"; if (k.includes("3 y 4")) return "3–4 h"; if (k.includes("mas de 4")) return ">4 h"; return txt(v); } function deviceN(v) { const k = nk(v); if (!k) return ""; if (k.includes("ambos")) return "Ambos"; if (k.includes("ninguno") || k.includes("no tengo")) return "Ninguno"; if (k.includes("telefono")) return "Teléfono"; if (k.includes("computador") || k.includes("pc") || k.includes("portatil")) return "Computador"; return labelN(v); } function easeN(v) { const k = nk(v); if (k === "muy facil") return "Muy fácil"; if (k === "facil") return "Fácil"; if (k === "dificil") return "Difícil"; if (k === "muy dificil") return "Muy difícil"; return labelN(v); } function knowsN(v) { const k = nk(v); if (k === "si") return "Sí"; if (k === "mas o menos") return "Más o menos"; if (k === "no") return "No"; return labelN(v); } function listensN(v) { const k = nk(v); if (k.includes("si") && k.includes("frecuencia")) return "Sí, con frecuencia"; if (k === "a veces") return "A veces"; if (k.includes("no se")) return "No sé de qué se trata"; if (k === "no") return "No"; return labelN(v); } function audN(v) { const k = nk(v); if (k === "totalmente de acuerdo") return "Totalmente de acuerdo"; if (k === "de acuerdo") return "De acuerdo"; if (k === "en desacuerdo") return "En desacuerdo"; if (k === "totalmente en desacuerdo") return "Totalmente en desacuerdo"; return labelN(v); } function learnN(v) { return labelN(v); } function createN(v) { const k = nk(v); if (k.includes("si") && (k.includes("gustaria mucho") || k.includes("gustaria"))) return "Sí"; if (k === "tal vez") return "Tal vez"; if (k.includes("no me gustaria")) return "No me gustaría"; return labelN(v); } function yesNoN(v) { const k = nk(v); if (k === "si") return "Sí"; if (k.startsWith("no")) return "No"; return labelN(v); } function skillN(v) { const k = nk(v); if (k === "altas") return "Altas"; if (k === "basicas") return "Básicas"; if (k === "bajas") return "Bajas"; return labelN(v); } function connectN(v) { const k = nk(v); if (k === "wifi en casa" || k === "wi fi en casa") return "Wi-Fi en casa"; if (k === "wifi de un familiar o vecino" || k === "wi fi de un familiar o vecino") return "Wi-Fi (familiar/vecino)"; if (k === "datos moviles") return "Datos móviles"; return labelN(v); } function labelN(v) { const c = txt(v); return L[nk(c)] || c; }
+        function ageN(v) { const n = parseFloat(txt(v).replace(",", ".")); return Number.isFinite(n) ? n : NaN; } function read(r, k) { return r && k in r ? r[k] : ""; } function txt(v) { return String(v || "").trim().replace(/\s+/g, " "); } function nk(v) { return txt(v).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); }
+        function isEmpty(r) { return !Object.values(r || {}).some(v => txt(v) !== ""); } function countBy(vals, ord) { const b = ord.map(() => 0); vals.forEach(v => { const i = ord.indexOf(v); if (i >= 0) b[i] += 1; }); return b; } function countMulti(rows, key) { const o = {}; rows.forEach(r => (r[key] || []).forEach(i => o[i] = (o[i] || 0) + 1)); return o; } function countObj(vals) { const o = {}; vals.forEach(v => { if (v) o[v] = (o[v] || 0) + 1; }); return o; }
+        function fn(n) { return Number.isFinite(n) ? n.toFixed(1) : "0.0"; } function fp(c, N) { return N ? `${((c / N) * 100).toFixed(1)}%` : "0.0%"; } function tip(l, c, N) { return `${l}: ${fp(c, N)} (${c}/${N})`; } function topCell(e, N) { return e ? `${e[0]} (${fp(e[1], N)}, ${e[1]})` : "—"; } function sum(a) { return a.reduce((x, y) => x + y, 0); } function id(x) { return document.getElementById(x); }
+    </script>
+</body>
+
+</html>
