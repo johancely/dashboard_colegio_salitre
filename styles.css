@@ -238,22 +238,54 @@ h1 {
 }
 
 .insights-grid {
-    margin-top: 16px;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 12px
+    gap: 16px
 }
 
 .insight-card {
-    padding: 16px 20px
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+    border-color: #e2e8f0;
 }
 
 .insight-value {
-    margin: 12px 0 0;
-    font-size: 14.5px;
-    line-height: 1.5;
+    margin: 10px 0 0;
+    font-size: 14px;
+    line-height: 1.55;
     font-weight: 600;
-    color: var(--brand);
+    color: var(--text);
+}
+
+.insight-value.is-empty {
+    color: #94a3b8;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.insights-grid article:nth-child(1) .kpi-label {
+    color: #1f6feb;
+}
+
+.insights-grid article:nth-child(2) .kpi-label {
+    color: #059669;
+}
+
+.insights-grid article:nth-child(3) .kpi-label {
+    color: #dc2626;
+}
+
+.insights-grid article:nth-child(4) .kpi-label {
+    color: #1f6feb;
+}
+
+.highlight-pct {
+    color: #059669;
+    font-weight: 800;
+    background: #d1fae5;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin: 0 2px;
 }
 
 .table-card {
@@ -302,6 +334,7 @@ td {
     .kpi-strip {
         grid-template-columns: repeat(3, minmax(0, 1fr))
     }
+
     .insights-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr))
     }
